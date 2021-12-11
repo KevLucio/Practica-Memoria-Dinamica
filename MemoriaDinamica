@@ -1,0 +1,165 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include"Libreria.h"
+/*
+Kevyn Alejandro Pérez Lucio
+1BM1
+Ingenieria en Inteligencia Artificial
+10/12/2021
+*/
+int *conversion(int z, int base, int *longitud)
+{
+    int *residuo = (int*)malloc(100* sizeof(int));
+    int k = 0;
+    while(z!=0)
+    {
+        residuo[k] = z % base;
+        z = z / base;
+        k++;
+    }
+    *longitud = k;
+    int *arr = (int*)malloc(k* sizeof(int));
+    for (int i=k-1, j=0; j<k; i--, j++)
+    {
+        arr[j]=residuo[i];
+    }
+    free(residuo);
+    return arr;
+}
+void iniciarOperaciones()
+{
+    int numCadenas,k,i,aux,longi;
+    FILE* archivo=NULL;
+    archivo=fopen("ArchivoTabla.txt","a");
+    printf("Cuantas cadenas desea ingresar? ");
+    scanf("%d", &numCadenas);
+    fflush(stdin);
+    char **cadenas = (char**)malloc(numCadenas* sizeof(char*));
+    for(i=0; i<numCadenas; i++)
+    {
+        cadenas[i] = (char*)malloc(100* sizeof(char));
+        printf("Ingresa tu cadena de caracteres: ");
+        scanf("%s", cadenas[i]);
+        fflush(stdin);
+    }
+    for(i=0; i<numCadenas; i++)
+    {
+        fprintf(archivo, "La cadena es: %s\n", cadenas[i]);
+    }
+    char *auxBinario = (char*)malloc(100* sizeof(char));
+    char *cadenaBinario = (char*)malloc(100* sizeof(char));
+    for(k=0; k<numCadenas; k++)
+    {
+        for(i=0; cadenas[k][i]!='\0'; i++)
+        {
+            aux = (int)(cadenas[k][i]);
+            int *binario = conversion(aux, 2, &longi);
+            for(int j=0; j<longi; j++)
+            {
+                sprintf(&cadenaBinario[j], "%d", binario[j]);
+            }
+            strcat(auxBinario, cadenaBinario);
+            strcat(auxBinario, " ");
+        }
+        fprintf(archivo, "Cadena en Binario: %s\n", auxBinario);
+        memset(auxBinario, '\0', 100);
+    }
+    free(cadenaBinario);
+    free(auxBinario);
+    char *auxHexadecimal = (char*)malloc(100* sizeof(char));
+    char *cadenaHexadecimal = (char*)malloc(100* sizeof(char));
+    for(k=0; k<numCadenas; k++)
+    {
+        for(i=0; cadenas[k][i]!='\0'; i++)
+        {
+            aux = (int)(cadenas[k][i]);
+            int *hexadecimal = conversion(aux, 16, &longi);
+            for(int j=0; j<longi; j++)
+            {
+                if(hexadecimal[j]<10)
+                {
+                    sprintf(&cadenaHexadecimal[j], "%d", hexadecimal[j]);
+                }
+                else if(hexadecimal[j]==10)
+                {
+                    cadenaHexadecimal[j] = 'A';
+                }
+                else if(hexadecimal[j]==11)
+                {
+                    cadenaHexadecimal[j] = 'B';
+                }
+                else if(hexadecimal[j]==12)
+                {
+                    cadenaHexadecimal[j] = 'C';
+                }
+                else if(hexadecimal[j]==13)
+                {
+                    cadenaHexadecimal[j] = 'D';
+                }
+                else if(hexadecimal[j]==14)
+                {
+                    cadenaHexadecimal[j] = 'E';
+                }
+                else if(hexadecimal[j]==15)
+                {
+                    cadenaHexadecimal[j] = 'F';
+                }
+            }
+            strcat(auxHexadecimal, cadenaHexadecimal);
+        }
+        fprintf(archivo, "Cadena en Hexadecimal: %s\n", auxHexadecimal);
+        memset(auxHexadecimal, '\0', 100);
+    }
+    free(cadenaHexadecimal);
+    free(auxHexadecimal);
+    for(i=0; i<numCadenas; i++)
+    {
+        fprintf(archivo, "El primer caracter de la cadena es: %c\n", cadenas[i][0]);
+    }
+    for(i=0; i<numCadenas; i++)
+    {
+        fprintf(archivo, "El valor entero del primer caracter de la cadena es: %d\n", (int)(cadenas[i][0]));
+    }
+    fclose(archivo);
+}
+void imprimirTablaEnArchivo()
+{
+    FILE* archivo=NULL;
+    archivo = fopen("ArchivoTabla.txt","a");
+    fclose(archivo);
+}
+void limpiarTablaEnArchivo()
+{
+    FILE* archivo=NULL;
+    archivo=fopen("ArchivoTabla.txt","w");
+    fclose(archivo);
+    free(archivo);
+}
+void main()
+{
+    int opc;
+    do
+    {
+        printf("QUE OPERACION DESEA REALIZAR? \n");
+        printf("1. Escribir o agregar de cadenas\n");
+        printf("2. Ver tabla resultante\n");
+        printf("3. Borrar datos de la tabla\n");
+        printf("4. Salir del programa\n");
+        scanf("%d", &opc);
+        switch (opc)
+        {
+            case 1:
+                iniciarOperaciones();
+                break;
+            case 2:
+                imprimirTablaEnArchivo();
+                break;
+            case 3:
+                limpiarTablaEnArchivo();
+                break;
+            default:
+               break;
+        }
+    } while (opc<4);
+}
